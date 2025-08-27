@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da velha</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+
+    <div class="content">
+        <div class="seletorIdioma">
+            <span id="idiomaSelecionado">🌐 English</span>
+            <div class="opcoesIdioma">
+                <div class="opcao" id="opcao1" onclick="mudarLinguagem(1)">
+                    <img src="https://flagcdn.com/w40/br.png" class="bandeira" alt="Bandeira Brasil"> Português
+                </div>
+                <div class="opcao" id="opcao2" onclick="mudarLinguagem(2)">
+                    <img src="https://flagcdn.com/w40/gb.png" class="bandeira" alt="Bandeira Reino Unido"> English
+                </div>
+            </div>
+        </div>
+
+        <h1>TIC-TAC-TOE</h1>
+        <main>
+            <div class="linha1">
+                <div class="area" id="area1" onclick="clickArea1()"></div>
+                <div class="area" id="area2" onclick="clickArea2()"></div>
+                <div class="area" id="area3" onclick="clickArea3()"></div>
+            </div>
+            <div class="linha2">
+                <div class="area" id="area4" onclick="clickArea4()"></div>
+                <div class="area" id="area5" onclick="clickArea5()"></div>
+                <div class="area" id="area6" onclick="clickArea6()"></div>
+            </div>
+            <div class="linha3">
+                <div class="area" id="area7" onclick="clickArea7()"></div>
+                <div class="area" id="area8" onclick="clickArea8()"></div>
+                <div class="area" id="area9" onclick="clickArea9()"></div>
+            </div>
+        </main>
+        <div id="divPlacar">
+            <div id="placarX">0</div>
+            <div id="placarMeio">VS</div>
+            <div id="placarO">0</div>
+        </div>
+        <div id="btResetarPlacar" onclick="verificarNovoJogo(true)">NEW GAME</div>
+    </div>
+
+    <section onclick="clickFora()">
+        <div id="caixaVencedor">
+            <div class="botoes"></div>
+            <p id="vencedorText">Point for player</p>
+            <p id="vencedor">X</p>
+
+            <button class="btOk" onclick="clickFora(true)">OK</button>
+        </div>
+
+        <div id="caixaEmpate">
+            <p id="empateText">Draw!</p>
+
+            <button class="btOk" onclick="clickFora(true)">OK</button>
+        </div>
+
+        <div id="caixaConfirmacao">
+            <p id="confirmText">Are you sure you want to start a new game?</p>
+
+            <div class="botoes">
+                <button class="btSim" onclick="resetarPlacar(true)">Yes</button>
+                <button class="btNao" onclick="resetarPlacar(false)">No</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+
+</html> 
