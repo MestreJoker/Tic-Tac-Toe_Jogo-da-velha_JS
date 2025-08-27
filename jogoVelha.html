@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da velha</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #2b7589;
+        }
+
+        .seletorIdioma {
+            position: relative;
+            background-color: #205066;
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 4px solid #0e2b3f;
+            color: #f3e4cd;
+            cursor: pointer;
+            user-select: none;
+            margin-top: 5px;
+        }
+
+        .seletorIdioma::after {
+            content: "▼";
+            margin-left: 10px;
+            font-size: 12px;
+        }
+
+        .opcoesIdioma {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            width: 100%;
+            background-color: #1a3a4d;
+            border-radius: 10px;
+            border: 2px solid #0e2b3f;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .seletorIdioma:hover .opcoesIdioma {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .opcao {
+            padding: 10px;
+            color: #f3e4cd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .opcao:hover {
+            background-color: #294f5e;
+            cursor: pointer;
+        }
+
+        .bandeira {
+            width: 24px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+
+
+        .content {
+            color: #f3e4cd;
+            background-color: #205066;
+            padding-left: 13px;
+            padding-right: 13px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 20px;
+            border: 6px solid #0e2b3f;
+        }
+
+        .content h1 {
+            font-size: 40px;
+            text-align: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        main {
+            width: 320px;
+            height: 320px;
+            background-color: #162b40;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .linha1 {
+            width: 100%;
+            height: 33.333%;
+            display: flex;
+            gap: 6px;
+        }
+
+        .linha2 {
+            width: 100%;
+            height: 33.333%;
+            display: flex;
+            gap: 6px;
+        }
+
+        .linha3 {
+            width: 100%;
+            height: 33.333%;
+            display: flex;
+            gap: 6px;
+        }
+
+        .area {
+            flex: 1;
+            height: 100%;
+            font-size: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f3e4cd;
+            line-height: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: clip;
+        }
+
+        .area:hover {
+            background-color: #b6ac9b;
+            cursor: pointer;
+        }
+
+        #area1 {
+            border-top-left-radius: 10px;
+        }
+
+        #area3 {
+            border-top-right-radius: 10px;
+        }
+
+        #area7 {
+            border-bottom-left-radius: 10px;
+        }
+
+        #area9 {
+            border-bottom-right-radius: 10px;
+        }
+
+        #divPlacar {
+            width: 100%;
+            background-color: #10293e;
+            border-radius: 15px;
+            height: 60px;
+            margin-top: 7px;
+            display: flex;
+            gap: 5px;
+            padding: 5px;
+        }
+
+        #placarX,
+        #placarMeio,
+        #placarO {
+            background-color: #1f4c65;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            font-weight: bold;
+
+        }
+
+        #placarX {
+            border-bottom-left-radius: 10px;
+            border-top-left-radius: 10px;
+            color: #177597;
+        }
+
+        #placarO {
+            border-bottom-right-radius: 10px;
+            border-top-right-radius: 10px;
+            color: #d35344;
+        }
+
+        #btResetarPlacar {
+            width: 70%;
+            height: 50px;
+            background-color: #f7b647;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            border-radius: 35px;
+            border: 6px solid #0e2b3f;
+            margin-bottom: 15px;
+            font-weight: bolder;
+            font-size: 25px;
+            color: white;
+        }
+
+        #btResetarPlacar:hover {
+            cursor: pointer;
+            background-color: #d39d40;
+        }
+
+        section {
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.377);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+            position: absolute;
+        }
+
+        #caixaVencedor {
+            background-color: white;
+            border-radius: 30px;
+            text-align: center;
+            padding: 15px;
+            height: 200px;
+            width: 250px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            display: none;
+        }
+
+        #caixaVencedor p {
+            font-size: 20px;
+        }
+
+        #caixaVencedor #vencedor {
+            font-size: 60px;
+            font-weight: bold;
+        }
+
+        #caixaEmpate {
+            background-color: white;
+            border-radius: 30px;
+            text-align: center;
+            padding: 15px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            display: none;
+        }
+
+        #caixaEmpate p {
+            font-weight: bold;
+            font-size: 30px;
+            color: #0051ff;
+        }
+
+        .btOk {
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            width: 60%;
+            height: 40px;
+            font-size: 25px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .btOk:hover {
+            background-color: rgb(5, 73, 5);
+            cursor: pointer;
+        }
+
+        #caixaConfirmacao {
+            background-color: white;
+            padding: 9px;
+            display: flex;
+            flex-direction: column;
+            display: none;
+            height: 200px;
+            width: 250px;
+            justify-content: space-evenly;
+            text-align: center;
+            border-radius: 15px;
+        }
+
+        #confirmText {
+            font-size: 20px;
+        }
+
+        .botoes {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .botoes button {
+            width: 70%;
+            border-radius: 30px;
+            border: none;
+            height: 40px;
+            font-size: 19px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .botoes button {
+            cursor: pointer;
+        }
+
+        .btSim {
+            background-color: green;
+        }
+
+        .btSim:hover {
+            background-color: rgb(2, 65, 2);
+        }
+
+        .btNao {
+            background-color: red;
+        }
+
+        .btNao:hover {
+            background-color: rgb(179, 3, 3);
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="content">
+        <div class="seletorIdioma">
+            <span id="idiomaSelecionado">🌐 English</span>
+            <div class="opcoesIdioma">
+                <div class="opcao" id="opcao1" onclick="mudarLinguagem(1)">
+                    <img src="https://flagcdn.com/w40/br.png" class="bandeira" alt="Bandeira Brasil"> Português
+                </div>
+                <div class="opcao" id="opcao2" onclick="mudarLinguagem(2)">
+                    <img src="https://flagcdn.com/w40/gb.png" class="bandeira" alt="Bandeira Reino Unido"> English
+                </div>
+            </div>
+        </div>
+
+        <h1>TIC-TAC-TOE</h1>
+        <main>
+            <div class="linha1">
+                <div class="area" id="area1" onclick="clickArea1()"></div>
+                <div class="area" id="area2" onclick="clickArea2()"></div>
+                <div class="area" id="area3" onclick="clickArea3()"></div>
+            </div>
+            <div class="linha2">
+                <div class="area" id="area4" onclick="clickArea4()"></div>
+                <div class="area" id="area5" onclick="clickArea5()"></div>
+                <div class="area" id="area6" onclick="clickArea6()"></div>
+            </div>
+            <div class="linha3">
+                <div class="area" id="area7" onclick="clickArea7()"></div>
+                <div class="area" id="area8" onclick="clickArea8()"></div>
+                <div class="area" id="area9" onclick="clickArea9()"></div>
+            </div>
+        </main>
+        <div id="divPlacar">
+            <div id="placarX">0</div>
+            <div id="placarMeio">VS</div>
+            <div id="placarO">0</div>
+        </div>
+        <div id="btResetarPlacar" onclick="verificarNovoJogo(true)">NEW GAME</div>
+    </div>
+
+    <section onclick="clickFora()">
+        <div id="caixaVencedor">
+            <div class="botoes"></div>
+            <p id="vencedorText">Point for player</p>
+            <p id="vencedor">X</p>
+
+            <button class="btOk" onclick="clickFora(true)">OK</button>
+        </div>
+
+        <div id="caixaEmpate">
+            <p id="empateText">Draw!</p>
+
+            <button class="btOk" onclick="clickFora(true)">OK</button>
+        </div>
+
+        <div id="caixaConfirmacao">
+            <p id="confirmText">Are you sure you want to start a new game?</p>
+
+            <div class="botoes">
+                <button class="btSim" onclick="resetarPlacar(true)">Yes</button>
+                <button class="btNao" onclick="resetarPlacar(false)">No</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        var vez = "X"
+        var area1 = document.getElementById('area1')
+        area1.innerText = ""
+        var area2 = document.getElementById('area2')
+        area2.innerText = ""
+        var area3 = document.getElementById('area3')
+        area3.innerText = ""
+        var area4 = document.getElementById('area4')
+        area4.innerText = ""
+        var area5 = document.getElementById('area5')
+        area5.innerText = ""
+        var area6 = document.getElementById('area6')
+        area6.innerText = ""
+        var area7 = document.getElementById('area7')
+        area7.innerText = ""
+        var area8 = document.getElementById('area8')
+        area8.innerText = ""
+        var area9 = document.getElementById('area9')
+        area9.innerText = ""
+
+        var section = document.getElementsByTagName('section')[0]
+        var caixaVencedor = document.getElementById('caixaVencedor')
+        var vencedorP = document.getElementById('vencedor')
+        var btOk = document.getElementsByTagName('button')[0]
+        var caixaEmpate = document.getElementById('caixaEmpate')
+
+        var placarX = document.getElementById('placarX')
+        var placarO = document.getElementById('placarO')
+
+        var idiomaSelecionado = document.getElementById('idiomaSelecionado')
+        var h1 = document.getElementsByTagName('h1')[0]
+        var btResetarPlacar = document.getElementById('btResetarPlacar')
+        var vencedorText = document.getElementById('vencedorText')
+        var empateText = document.getElementById('empateText')
+
+        var caixaConfirmacao = document.getElementById('caixaConfirmacao')
+        var confirmText = document.getElementById('confirmText')
+        var btSim = document.getElementsByClassName('btSim')[0]
+        var btNao = document.getElementsByClassName('btNao')[0]
+
+        let opcoesIdioma = document.getElementsByClassName('opcoesIdioma')[0];
+
+        function clickArea1() {
+            if (vez == "X") {
+                area1.innerText = "X"
+                vez = "O"
+                area1.style.color = "#177597"
+                area1.style.pointerEvents = "none"
+                verificarJogada()
+            }
+            else {
+                area1.innerText = "O"
+                vez = "X"
+                area1.style.color = "red"
+                area1.style.pointerEvents = "none"
+                verificarJogada()
+            }
+        }
+
+        function clickArea2() {
+            if (vez == "X") {
+                area2.innerText = "X"
+                vez = "O"
+                area2.style.color = "#177597"
+                area2.style.pointerEvents = "none"
+                verificarJogada()
+            }
+            else {
+                area2.innerText = "O"
+                vez = "X"
+                area2.style.color = "red"
+                area2.style.pointerEvents = "none"
+                verificarJogada()
+            }
+        }
+
+        function clickArea3() {
+            if (vez == "X") {
+                area3.innerText = "X"
+                vez = "O"
+                area3.style.color = "#177597"
+                area3.style.pointerEvents = "none"
+                verificarJogada()
+            }
+            else {
+                area3.innerText = "O"
+                vez = "X"
+                area3.style.color = "red"
+                area3.style.pointerEvents = "none"
+                verificarJogada()
+            }
+        }
+
+        function clickArea4() {
+            if (vez == "X") {
+                area4.innerText = "X"
+                vez = "O"
+                area4.style.color = "#177597"
+                area4.style.pointerEvents = "none"
+                verificarJogada()
+            }
+            else {
+                area4.innerText = "O"
+                vez = "X"
+                area4.style.color = "red"
+                area4.style.pointerEvents = "none"
+                verificarJogada()
+            }
+        }
+
+        function clickArea5() {
+            if (vez == "X") {
+                area5.innerText = "X"
+                vez = "O"
+                area5.style.color = "#177597"
+                area5.style.pointerEvents = "none"
+                verificarJogada()
+            }
+            else {
+                area5.innerText = "O"
+                vez = "X"
+                area5.style.color = "red"
+                area5.style.pointerEvents = "none"
+                verificarJogada()
+            }
+        }
+
+        function clickArea6() {
+            if (vez == "X") {
+                area6.innerText = "X"
+                vez = "O"
+                area6.style.color = "#177597"
+                area6.style.pointerEvents = "none"
+                verificarJogada()
+            }
+            else {
+                area6.innerText = "O"
+                vez = "X"
+                area6.style.color = "red"
+                area6.style.pointerEvents = "none"
+                verificarJogada()
+            }
+        }
+
+        function clickArea7() {
+            if (vez == "X") {
+                area7.innerText = "X"
+                vez = "O"
+                area7.style.color = "#177597"
+                area7.style.pointerEvents = "none"
+                verificarJogada()
+            }
+            else {
+                area7.innerText = "O"
+                vez = "X"
+                area7.style.color = "red"
+                area7.style.pointerEvents = "none"
+                verificarJogada()
+            }
+        }
+
+        function clickArea8() {
+            if (vez == "X") {
+                area8.innerText = "X"
+                vez = "O"
+                area8.style.color = "#177597"
+                area8.style.pointerEvents = "none"
+                verificarJogada()
+            }
+            else {
+                area8.innerText = "O"
+                vez = "X"
+                area8.style.color = "red"
+                area8.style.pointerEvents = "none"
+                verificarJogada()
+            }
+        }
+
+        function clickArea9() {
+            if (vez == "X") {
+                area9.innerText = "X"
+                vez = "O"
+                area9.style.color = "#177597"
+                area9.style.pointerEvents = "none"
+                verificarJogada()
+            }
+            else {
+                area9.innerText = "O"
+                vez = "X"
+                area9.style.color = "red"
+                area9.style.pointerEvents = "none"
+                verificarJogada()
+            }
+        }
+
+        function verificarJogada() {
+            // Verificar linhas
+            if (
+                area1.innerText == "X" && area2.innerText == "X" && area3.innerText == "X" ||
+                area4.innerText == "X" && area5.innerText == "X" && area6.innerText == "X" ||
+                area7.innerText == "X" && area8.innerText == "X" && area9.innerText == "X"
+            ) {
+                setTimeout(() => {
+                    placarX.innerText = String(Number(placarX.innerText) + 1)
+                    vencedorP.innerText = "X"
+                    vencedorP.style.color = "#177597"
+                    section.style.display = "flex"
+                    caixaVencedor.style.display = "flex"
+                    caixaEmpate.style.display = "none"
+
+                }, 200);
+            } else if (
+                area1.innerText == "O" && area2.innerText == "O" && area3.innerText == "O" ||
+                area4.innerText == "O" && area5.innerText == "O" && area6.innerText == "O" ||
+                area7.innerText == "O" && area8.innerText == "O" && area9.innerText == "O"
+            ) {
+                setTimeout(() => {
+                    placarO.innerText = String(Number(placarO.innerText) + 1)
+                    vencedorP.innerText = "O"
+                    vencedorP.style.color = "red"
+                    section.style.display = "flex"
+                    caixaVencedor.style.display = "flex"
+                    caixaEmpate.style.display = "none"
+                }, 200);
+            }
+
+            // Verificar colunas
+            else if (
+                area1.innerText == "X" && area4.innerText == "X" && area7.innerText == "X" ||
+                area2.innerText == "X" && area5.innerText == "X" && area8.innerText == "X" ||
+                area3.innerText == "X" && area6.innerText == "X" && area9.innerText == "X"
+            ) {
+                setTimeout(() => {
+                    placarX.innerText = String(Number(placarX.innerText) + 1)
+                    vencedorP.innerText = "X"
+                    vencedorP.style.color = "#177597"
+                    section.style.display = "flex"
+                    caixaVencedor.style.display = "flex"
+                    caixaEmpate.style.display = "none"
+                }, 200);
+            } else if (
+                area1.innerText == "O" && area4.innerText == "O" && area7.innerText == "O" ||
+                area2.innerText == "O" && area5.innerText == "O" && area8.innerText == "O" ||
+                area3.innerText == "O" && area6.innerText == "O" && area9.innerText == "O"
+            ) {
+                setTimeout(() => {
+                    placarO.innerText = String(Number(placarO.innerText) + 1)
+                    vencedorP.innerText = "O"
+                    vencedorP.style.color = "red"
+                    section.style.display = "flex"
+                    caixaVencedor.style.display = "flex"
+                    caixaEmpate.style.display = "none"
+                }, 200);
+            }
+
+            // Verificar diagonais
+            else if (
+                area1.innerText == "X" && area5.innerText == "X" && area9.innerText == "X" ||
+                area3.innerText == "X" && area5.innerText == "X" && area7.innerText == "X"
+            ) {
+                setTimeout(() => {
+                    placarX.innerText = String(Number(placarX.innerText) + 1)
+                    vencedorP.innerText = "X"
+                    vencedorP.style.color = "#177597"
+                    section.style.display = "flex"
+                    caixaVencedor.style.display = "flex"
+                    caixaEmpate.style.display = "none"
+                }, 200);
+            } else if (
+                area1.innerText == "O" && area5.innerText == "O" && area9.innerText == "O" ||
+                area3.innerText == "O" && area5.innerText == "O" && area7.innerText == "O"
+            ) {
+                setTimeout(() => {
+                    placarO.innerText = String(Number(placarO.innerText) + 1)
+                    vencedorP.innerText = "O"
+                    vencedorP.style.color = "red"
+                    section.style.display = "flex"
+                    caixaVencedor.style.display = "flex"
+                    caixaEmpate.style.display = "none"
+                }, 200);
+            }
+
+            else if (
+                area1.innerText != "" && area2.innerText != "" && area3.innerText != "" &&
+                area4.innerText != "" && area5.innerText != "" && area6.innerText != "" &&
+                area7.innerText != "" && area8.innerText != "" && area9.innerText != ""
+            ) {
+                section.style.display = "flex"
+                caixaVencedor.style.display = "none"
+                caixaEmpate.style.display = "flex"
+            }
+        }
+
+        function clickFora(podeFechar) {
+            if (
+                !caixaVencedor.contains(event.target) &&
+                !caixaEmpate.contains(event.target) &&
+                !caixaConfirmacao.contains(event.target) ||
+                podeFechar == true
+            ) {
+                section.style.display = 'none'
+                caixaConfirmacao.style.display = "none"
+                caixaEmpate.style.display = "none"
+                caixaVencedor.style.display = "none"
+                resetarAreas()
+            }
+        }
+
+        function resetarAreas(params) {
+            area1.innerText = ""
+            area1.style.pointerEvents = "auto"
+            area2.innerText = ""
+            area2.style.pointerEvents = "auto"
+            area3.innerText = ""
+            area3.style.pointerEvents = "auto"
+            area4.innerText = ""
+            area4.style.pointerEvents = "auto"
+            area5.innerText = ""
+            area5.style.pointerEvents = "auto"
+            area6.innerText = ""
+            area6.style.pointerEvents = "auto"
+            area7.innerText = ""
+            area7.style.pointerEvents = "auto"
+            area8.innerText = ""
+            area8.style.pointerEvents = "auto"
+            area9.innerText = ""
+            area9.style.pointerEvents = "auto"
+        }
+
+        function verificarNovoJogo() {
+            section.style.display = "flex"
+            caixaConfirmacao.style.display = "flex"
+        }
+        function resetarPlacar(confirmacao) {
+            if (confirmacao == true) {
+                if(Number(placarX.innerText) > Number(placarO.innerText)){
+                    alert("O jogador X ganhou a partida/The player X won the match")
+                }
+                else if(Number(placarX.innerText) < Number(placarO.innerText)){
+                    alert("O jogador O ganhou a partida/The player O won the match")
+                }
+                else{
+                    alert("Empate/Draw")
+                }
+                placarX.innerText = "0"
+                placarO.innerText = "0"
+                vez = "X"
+                section.style.display = "none"
+                caixaConfirmacao.style.display = "none"
+                resetarAreas()
+            }
+            else {
+                section.style.display = "none"
+                caixaConfirmacao.style.display = "none"
+            }
+        }
+
+        function mudarLinguagem(linguagem) {
+            if (linguagem == 1) {
+                idiomaSelecionado.innerText = "🌐 Português"
+                h1.innerText = "JOGO DA VELHA"
+                btResetarPlacar.innerText = "NOVO JOGO"
+                vencedorText.innerHTML = "Ponto para o jogador"
+                empateText.innerHTML = "Deu velha!"
+                confirmText.innerText = "Tem certeza que deseja iniciar um novo jogo"
+                btSim.innerText = "Sim"
+                btNao.innerText = "Não"
+            }
+            else {
+                idiomaSelecionado.innerText = "🌐 English"
+                h1.innerText = "TIC-TAC-TOE"
+                btResetarPlacar.innerText = "NEW GAME"
+                vencedorText.innerHTML = "Point for player"
+                empateText.innerHTML = "Draw!"
+                confirmText.innerText = "Are you sure you want to start a new game?"
+                btSim.innerText = "Yes"
+                btNao.innerText = "No"
+            }
+        }
+    </script>
+</body>
+
+</html> 
