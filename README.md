@@ -1,3 +1,6 @@
+<h3>Veja o site em:</h3>
+<p>mestrejoker.github.io/Tic-Tac-Toe_Jogo-da-velha_JS</p>
+<hr>
 <h1>Jogo da Velha do Gabriel</h1>
 Bem-vindo ao meu projeto de Jogo da Velha! Este é um aplicativo web interativo criado por Gabriel dos Santos Gomes como parte do meu aprendizado em desenvolvimento front-end, oferecendo uma experiência divertida e personalizável.
 
